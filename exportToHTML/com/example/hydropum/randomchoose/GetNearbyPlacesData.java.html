@@ -1,0 +1,97 @@
+<html>
+<head>
+<title>GetNearbyPlacesData.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+GetNearbyPlacesData.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">com.example.hydropum.randomchoose; 
+ 
+</span><span class="s2">/** 
+ * Created by Hydropum on 10/2/2016. 
+ */</span><span class="s1"> 
+ 
+        </span><span class="s0">import </span><span class="s1">android.os.AsyncTask; 
+        </span><span class="s0">import </span><span class="s1">android.util.Log; 
+ 
+        </span><span class="s0">import </span><span class="s1">com.google.android.gms.maps.CameraUpdateFactory; 
+        </span><span class="s0">import </span><span class="s1">com.google.android.gms.maps.GoogleMap; 
+        </span><span class="s0">import </span><span class="s1">com.google.android.gms.maps.model.BitmapDescriptorFactory; 
+        </span><span class="s0">import </span><span class="s1">com.google.android.gms.maps.model.LatLng; 
+        </span><span class="s0">import </span><span class="s1">com.google.android.gms.maps.model.MarkerOptions; 
+ 
+        </span><span class="s0">import </span><span class="s1">org.json.JSONObject; 
+ 
+        </span><span class="s0">import </span><span class="s1">java.util.HashMap; 
+        </span><span class="s0">import </span><span class="s1">java.util.List; 
+ 
+</span><span class="s2">/** 
+ * Created by navneet on 23/7/16. 
+ */</span><span class="s1"> 
+</span><span class="s0">public class </span><span class="s1">GetNearbyPlacesData </span><span class="s0">extends </span><span class="s1">AsyncTask&lt;Object, String, String&gt; { 
+ 
+    String googlePlacesData; 
+    GoogleMap mMap; 
+    String url; 
+ 
+    @Override 
+    </span><span class="s0">protected </span><span class="s1">String doInBackground(Object... params) { 
+        </span><span class="s0">try </span><span class="s1">{ 
+            Log.d(</span><span class="s3">&quot;GetNearbyPlacesData&quot;</span><span class="s1">, </span><span class="s3">&quot;doInBackground entered&quot;</span><span class="s1">); 
+            mMap = (GoogleMap) params[</span><span class="s4">0</span><span class="s1">]; 
+            url = (String) params[</span><span class="s4">1</span><span class="s1">]; 
+            DownloadUrl downloadUrl = </span><span class="s0">new </span><span class="s1">DownloadUrl(); 
+            googlePlacesData = downloadUrl.readUrl(url); 
+            Log.d(</span><span class="s3">&quot;GooglePlacesReadTask&quot;</span><span class="s1">, </span><span class="s3">&quot;doInBackground Exit&quot;</span><span class="s1">); 
+        } </span><span class="s0">catch </span><span class="s1">(Exception e) { 
+            Log.d(</span><span class="s3">&quot;GooglePlacesReadTask&quot;</span><span class="s1">, e.toString()); 
+        } 
+        </span><span class="s0">return </span><span class="s1">googlePlacesData; 
+    } 
+ 
+    @Override 
+    </span><span class="s0">protected void </span><span class="s1">onPostExecute(String result) { 
+        Log.d(</span><span class="s3">&quot;GooglePlacesReadTask&quot;</span><span class="s1">, </span><span class="s3">&quot;onPostExecute Entered&quot;</span><span class="s1">); 
+        List&lt;HashMap&lt;String, String&gt;&gt; nearbyPlacesList = </span><span class="s0">null</span><span class="s1">; 
+        DataParser dataParser = </span><span class="s0">new </span><span class="s1">DataParser(); 
+        nearbyPlacesList =  dataParser.parse(result); 
+        ShowNearbyPlaces(nearbyPlacesList); 
+        Log.d(</span><span class="s3">&quot;GooglePlacesReadTask&quot;</span><span class="s1">, </span><span class="s3">&quot;onPostExecute Exit&quot;</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">ShowNearbyPlaces(List&lt;HashMap&lt;String, String&gt;&gt; nearbyPlacesList) { 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; nearbyPlacesList.size(); i++) { 
+            Log.d(</span><span class="s3">&quot;onPostExecute&quot;</span><span class="s1">,</span><span class="s3">&quot;Entered into showing locations&quot;</span><span class="s1">); 
+            MarkerOptions markerOptions = </span><span class="s0">new </span><span class="s1">MarkerOptions(); 
+            HashMap&lt;String, String&gt; googlePlace = nearbyPlacesList.get(i); 
+            </span><span class="s0">double </span><span class="s1">lat = Double.parseDouble(googlePlace.get(</span><span class="s3">&quot;lat&quot;</span><span class="s1">)); 
+            </span><span class="s0">double </span><span class="s1">lng = Double.parseDouble(googlePlace.get(</span><span class="s3">&quot;lng&quot;</span><span class="s1">)); 
+            String placeName = googlePlace.get(</span><span class="s3">&quot;place_name&quot;</span><span class="s1">); 
+            String vicinity = googlePlace.get(</span><span class="s3">&quot;vicinity&quot;</span><span class="s1">); 
+            LatLng latLng = </span><span class="s0">new </span><span class="s1">LatLng(lat, lng); 
+            markerOptions.position(latLng); 
+            markerOptions.title(placeName + </span><span class="s3">&quot; : &quot; </span><span class="s1">+ vicinity); 
+            mMap.addMarker(markerOptions); 
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)); 
+            </span><span class="s2">//move map camera</span><span class="s1"> 
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng)); 
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(</span><span class="s4">11</span><span class="s1">)); 
+        } 
+    } 
+} 
+</span></pre>
+</body>
+</html>
